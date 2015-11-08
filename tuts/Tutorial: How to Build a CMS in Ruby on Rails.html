@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html><head>
+  <title>
+    
+      Tutorial: How to Build a CMS in Ruby on Rails
+    
+  </title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+
+  <link rel="stylesheet" href="Tutorial:%20How%20to%20Build%20a%20CMS%20in%20Ruby%20on%20Rails_files/base.css" type="text/css">
+  <link href="Tutorial:%20How%20to%20Build%20a%20CMS%20in%20Ruby%20on%20Rails_files/css.css" rel="stylesheet" type="text/css">
+
+  
+
+  <script src="Tutorial:%20How%20to%20Build%20a%20CMS%20in%20Ruby%20on%20Rails_files/analytics.js" async=""></script><script type="text/javascript" src="Tutorial:%20How%20to%20Build%20a%20CMS%20in%20Ruby%20on%20Rails_files/jquery-1.js"></script>
+  <script type="text/javascript" src="Tutorial:%20How%20to%20Build%20a%20CMS%20in%20Ruby%20on%20Rails_files/jquery.js"></script>
+  <script type="text/javascript" src="Tutorial:%20How%20to%20Build%20a%20CMS%20in%20Ruby%20on%20Rails_files/base.js"></script>
+
+  <link rel="canonical" href="http://pchm.co/tutorial-how-to-build-a-cms-in-ruby-on-rails/">
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-54907763-1', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+<style type="text/css">#mc_embed_signup input.mce_inline_error { border-color:#6B0505; } #mc_embed_signup div.mce_inline_error { margin: 0 0 1em 0; padding: 5px 10px; background-color:#6B0505; font-weight: bold; z-index: 1; color:#fff; }</style></head>
+<body class="gridX">
+  <header id="top" class="clearfix">
+    <div class="wrapper clearfix">
+      <h1><a href="http://pchm.co/">Piotr Chmolowski</a></h1>
+
+      <nav id="main-nav">
+        <ul class="nav">
+          <li><a href="https://twitter.com/p_ch">@p_ch</a></li>
+          <li><a href="http://www.postmodern.pl/">Hire me</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrapper">
+  <section class="post">
+    <p class="date">September 18, 2015</p>
+    <h1>Tutorial: How to Build a CMS in Ruby on Rails</h1>
+    <div class="post-body"><p>I remember exactly when and why I started learning Ruby and Rails. It was right after I saw the famous <a href="https://www.youtube.com/watch?v=Gzj723LkRJY">“blog in 15 minutes”</a>
+ video by DHH. This quick, clumsy demo of the new web framework, written
+ in an exotic programming language, was like a breath of fresh air – a 
+comforting, elegant answer to all the little annoyances I was constantly
+ dealing with in PHP. I immediately wanted to know more about Rails, so I
+ got my hands on <a href="https://pragprog.com/book/rails4/agile-web-development-with-rails-4">The Pickaxe</a> book and devoured it in a couple of evenings.</p>
+
+<p>What I loved the most about the video and the book (and <a href="http://railscasts.com/">railscasts</a> later on) was that they focused on showing me <strong>what I can do</strong>
+ with Rails. There weren’t any contrived ”imagine a car" analogies, only
+ real-world examples I could easily turn into a working web app – 
+something I could build upon later in my projects.</p>
+
+<p>If you’re learning Rails right now, this guide is for you. It’s my 
+little attempt at a real-world example of what you can do with Rails. 
+I’ll try to show you how to build a flexible, reusable CMS engine using 
+various features offered by RoR and Postgres.</p>
+
+<h2>Why a CMS?</h2>
+
+<p>CMS in 2015 is probably one of the least inventive things to build 
+from scratch. Nevertheless, it’s still the most widely used type of 
+software on the internet – and probably the type of software you’ll find
+ yourself building multiple times during your web development career in 
+one form or another. The real reason, though, is that I wanted to build a
+ simple CMS for my own needs and decided it might be a good idea to 
+describe the process here.</p>
+
+<p>The concept of Content Management System has been approached 
+countless times and in most cases it makes very little sense not to use a
+ well-established solution for your project. But we’re not building a 
+competitor for WordPress or Ghost here. That’s not the point of this 
+tutorial.</p>
+
+<p>We’re only interested in the process that goes into building a CMS 
+from scratch. How do you begin? How do you define the problem? How do 
+you divide the work into smaller, non-intimidating chunks? How to build <a href="http://c2.com/cgi/wiki?DoTheSimplestThingThatCouldPossiblyWork">the simplest thing that could possibly work</a>?</p>
+
+<p>This tutorial assumes you have some knowledge about Ruby, Rails, Postgres, JavaScript, plus basic understanding of: <a href="http://api.rubyonrails.org/classes/ActiveRecord/Inheritance.html">Single Table Inheritance</a>, <a href="http://ruby-doc.org/stdlib-2.0.0/libdoc/json/rdoc/JSON.html">JSON</a>, <a href="http://www.postgresql.org/docs/9.1/static/textsearch-intro.html">full-text search</a> and <a href="http://daringfireball.net/projects/markdown/">Markdown</a>. It’s definitely not targeted at total beginners, but you won’t find anything unattainable here.</p>
+
+<hr>
+
+<p><strong>Table of Contents:</strong></p>
+
+<ol>
+<li><a href="#getting-started">Getting Started</a></li>
+<li><a href="#data-model">Data Model</a></li>
+<li><a href="#admin-interface">Admin Interface</a></li>
+<li><a href="#blog">Blog</a></li>
+<li><a href="#search">Search</a></li>
+<li><a href="#user-authentication">User Authentication</a></li>
+<li><a href="#markdown-live-preview">Markdown &amp; Live Preview</a></li>
+</ol>
+
+
+<hr>
+
+<h2><a name="getting-started"></a>Getting Started</h2>
+
+<p>Let’s take a minute to think about what we’re aiming to build here.</p>
+
+<p>We want a reusable piece of code that will allow us to create a blog 
+or any type of content site. It should support multiple content types: 
+blog posts, articles, galleries etc. Ideally, it should be implemented 
+as a plugin, so that we can reuse it in multiple Rails apps. Content 
+will be created via admin panel and we should not have to do modify 
+anything in the admin code when we introduce a new content type. Admin 
+panel will be the only fixed part of the system – the way content is 
+presented is 100% up to the person using our CMS.</p>
+
+<p>Last but not least, we need a fancy name for our project. Let’s call it <strong>Wellspring</strong>.</p>
+
+<p></p><aside><p></p>
+
+<h3>Source Code</h3>
+
+<p>The complete source code of <a href="https://github.com/pch/wellspring">Wellspring</a> is available on GitHub.
+</p></aside><p></p>
+
+<h3>Set up the Project</h3>
+
+<p>Since we’ve chosen to implement Wellspring as a plugin, we’re going 
+to need 2 Rails projects: one for the CMS engine and other for our main 
+app – a simple blog. This setup complicates the workflow a little bit, 
+as we’ll be moving back and forth between Wellspring and the blog app 
+quite a lot. It’s not too bad, though – Rails takes care of reloading 
+modified code from <a href="http://edgeguides.rubyonrails.org/engines.html">mountable engines</a>, so you won’t have to restart your server every time you make a change to Wellspring.</p>
+
+<p>Fire up your terminal and run the following commands:</p>
+
+<div class="highlight"><pre><code class="bash"><span class="nv">$ </span>rails plugin new wellspring --mountable --database<span class="o">=</span>postgresql --skip-spring --skip-turbolinks
+<span class="nv">$ </span>rails new blog --skip-turbolinks --skip-spring --database<span class="o">=</span>postgresql
+<span class="nv">$ </span><span class="nb">cd </span>blog
+</code></pre></div>
+
+
+<p>Let’s mount Wellspring to our blog app. Add the following line to <code>Gemfile</code>:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="c1"># blog: Gemfile</span>
+<span class="n">gem</span> <span class="s1">'wellspring'</span><span class="p">,</span> <span class="ss">path</span><span class="p">:</span> <span class="s1">'../wellspring/'</span>
+</code></pre></div>
+
+
+<p>Run <code>bundle</code> to install required gems. Next, insert this line in <code>config/routes.rb</code>:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="c1"># blog: config/routes.rb</span>
+<span class="n">mount</span> <span class="no">Wellspring</span><span class="o">::</span><span class="no">Engine</span><span class="p">,</span> <span class="ss">at</span><span class="p">:</span> <span class="s1">'/admin'</span>
+</code></pre></div>
+
+
+<p>Evertything’s set up now, we have a basis for our project, so let’s start thinking about the data model.</p>
+
+<h2><a name="getting-started"></a> Data Model</h2>
+
+<p>As mentioned earlier, we want our CMS to be able to handle just about
+ any type of content. Whether it’s a blog post, photo gallery or a music
+ album, our code should support it out of the box.</p>
+
+<p>Since we don’t really know what types of content we may need in the 
+future, our solution should be flexible enough so that it doesn’t 
+require modifying the database structure each time we introduce a new 
+type of content. That’s why we’ll create a single table called 
+“entries”, which will serve as a universal storage for all content 
+types.</p>
+
+<p>Because we’re using Postgres, rather than a NoSQL solution (like 
+MongoDB), we have a fixed set of columns in our table. This means we 
+need a special column for storing all the custom attributes our content 
+classes need (blog posts will have ‘body’, music albums will have 
+‘artist’, ‘tracks’, ‘release date’ etc.).</p>
+
+<p>JSON is a great fit for this purpose. Postgres supports <a href="http://www.postgresql.org/docs/9.4/static/datatype-json.html">JSON columns</a> natively and we’ll take advantage of that.</p>
+
+<p>Let’s start with the model:</p>
+
+<div class="highlight"><pre><code class="bash"><span class="nv">$ </span><span class="nb">cd </span>wellspring
+<span class="nv">$ </span>rails generate model Entry
+</code></pre></div>
+
+
+<p>Put the following code in <code>db/*_create_entries.rb</code>:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="c1"># wellspring: db/*_create_entries.rb:</span>
+<span class="n">create_table</span> <span class="ss">:wellspring_entries</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="o">|</span>
+  <span class="n">t</span><span class="o">.</span><span class="n">string</span> <span class="ss">:type</span><span class="p">,</span> <span class="ss">index</span><span class="p">:</span> <span class="kp">true</span>
+  <span class="n">t</span><span class="o">.</span><span class="n">string</span> <span class="ss">:title</span>
+  <span class="n">t</span><span class="o">.</span><span class="n">string</span> <span class="ss">:slug</span><span class="p">,</span> <span class="ss">index</span><span class="p">:</span> <span class="kp">true</span>
+  <span class="n">t</span><span class="o">.</span><span class="n">json</span> <span class="ss">:payload</span>
+  <span class="n">t</span><span class="o">.</span><span class="n">integer</span> <span class="ss">:user_id</span><span class="p">,</span> <span class="ss">index</span><span class="p">:</span> <span class="kp">true</span>
+  <span class="n">t</span><span class="o">.</span><span class="n">string</span> <span class="ss">:author_name</span>
+
+  <span class="n">t</span><span class="o">.</span><span class="n">datetime</span> <span class="ss">:published_at</span>
+  <span class="n">t</span><span class="o">.</span><span class="n">timestamps</span> <span class="ss">null</span><span class="p">:</span> <span class="kp">false</span>
+<span class="k">end</span>
+</code></pre></div>
+
+
+<p>This is our main table. The <code>type</code> column indicates that it’s a <a href="http://api.rubyonrails.org/classes/ActiveRecord/Inheritance.html">Single Table Inheritance</a> (STI) model, which means that we can create our custom types of content simply by inheriting from <code>Entry</code>.</p>
+
+<p>We assume that <code>title</code>, <code>slug</code> (friendly URL) and <code>published_at</code> are the only fields common to all types of content. The <code>payload</code>
+ column will store any other data our content requires. The great 
+advantage of using the native JSON data type is that we can easily query
+ against our dynamic attributes:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="c1"># find all projects for the given client</span>
+<span class="no">PortfolioEntry</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s1">'payload-&gt;client_name = ?'</span><span class="p">,</span> <span class="s1">'ACME'</span><span class="p">)</span>
+</code></pre></div>
+
+
+<p>Let’s plow ahead, though. Move back to the <code>blog</code> project and run:</p>
+
+<div class="highlight"><pre><code class="bash"><span class="nv">$ </span>rake wellspring:install:migrations
+<span class="nv">$ </span>rake db:create
+<span class="nv">$ </span>rake db:migrate
+</code></pre></div>
+
+
+<p>We have the basis for our content data, so let’s now create a class 
+for blog posts. Blog post usually consist of a title and body. We 
+already have a title column in the database table, so we only need to 
+handle <code>body</code> text.</p>
+
+<p>Create the following file in your <code>blog</code> project in <code>app/models/blog_post.rb</code>:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="c1"># blog: app/models/blog_post.rb</span>
+<span class="k">class</span> <span class="nc">BlogPost</span> <span class="o">&lt;</span> <span class="no">Wellspring</span><span class="o">::</span><span class="no">Entry</span>
+  <span class="n">content_attr</span> <span class="ss">:body</span><span class="p">,</span> <span class="ss">:text</span>
+<span class="k">end</span>
+</code></pre></div>
+
+
+<p>We’ve created a new content class, <code>BlogPost</code>, and since we’re inheriting from <code>Entry</code>, there’s no need to create any migrations. We’ve also declared that <code>BlogPost</code> has a custom text attribute (<code>content_attr</code>) called <code>body</code>.</p>
+
+<p>The last part is not implemented yet, so let’s go back to <code>Wellspring::Entry</code> and add the following code:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="c1"># wellspring: app/models/wellspring/entry.rb</span>
+<span class="k">module</span> <span class="nn">Wellspring</span>
+  <span class="k">class</span> <span class="nc">Entry</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+    <span class="n">scope</span> <span class="ss">:published</span><span class="p">,</span> <span class="o">-&gt;</span> <span class="p">{</span> <span class="n">where</span><span class="p">(</span><span class="s1">'published_at &lt;= ?'</span><span class="p">,</span> <span class="no">Time</span><span class="o">.</span><span class="n">zone</span><span class="o">.</span><span class="n">now</span><span class="p">)</span> <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">content_attr</span><span class="p">(</span><span class="n">attr_name</span><span class="p">,</span> <span class="n">attr_type</span> <span class="o">=</span> <span class="ss">:string</span><span class="p">)</span>
+      <span class="n">content_attributes</span><span class="o">[</span><span class="n">attr_name</span><span class="o">]</span> <span class="o">=</span> <span class="n">attr_type</span>
+
+      <span class="n">define_method</span><span class="p">(</span><span class="n">attr_name</span><span class="p">)</span> <span class="k">do</span>
+        <span class="nb">self</span><span class="o">.</span><span class="n">payload</span> <span class="o">||=</span> <span class="p">{}</span>
+        <span class="nb">self</span><span class="o">.</span><span class="n">payload</span><span class="o">[</span><span class="n">attr_name</span><span class="o">.</span><span class="n">to_s</span><span class="o">]</span>
+      <span class="k">end</span>
+
+      <span class="n">define_method</span><span class="p">(</span><span class="s2">"</span><span class="si">#{</span><span class="n">attr_name</span><span class="si">}</span><span class="s2">="</span><span class="o">.</span><span class="n">to_sym</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">value</span><span class="o">|</span>
+        <span class="nb">self</span><span class="o">.</span><span class="n">payload</span> <span class="o">||=</span> <span class="p">{}</span>
+        <span class="nb">self</span><span class="o">.</span><span class="n">payload</span><span class="o">[</span><span class="n">attr_name</span><span class="o">.</span><span class="n">to_s</span><span class="o">]</span> <span class="o">=</span> <span class="n">value</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">content_attributes</span>
+      <span class="vi">@content_attributes</span> <span class="o">||=</span> <span class="p">{}</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
+
+
+<p>Every time <code>content_attr</code> is called, it will create 
+accessor methods for the given attribute, so that we can use it as if 
+they were regular ActiveRecord attributes:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="n">post</span> <span class="o">=</span> <span class="no">BlogPost</span><span class="o">.</span><span class="n">new</span>
+<span class="n">post</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">"Hello World"</span>
+<span class="n">post</span><span class="o">.</span><span class="n">body</span> <span class="o">=</span> <span class="s2">"I'm a blog post!"</span>
+<span class="n">post</span><span class="o">.</span><span class="n">body</span> <span class="c1">#=&gt; "I'm a blog post!"</span>
+</code></pre></div>
+
+
+<p>The value of <code>body</code> is stored as JSON within the <code>payload</code> field, so <code>content_attr</code> is in fact just a way to wrap the <code>payload</code> hash:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="n">post</span><span class="o">.</span><span class="n">payload</span> <span class="c1">#=&gt; {"body"=&gt;"I'm a blog post!"}</span>
+<span class="n">post</span><span class="o">.</span><span class="n">payload</span><span class="o">[</span><span class="s2">"body"</span><span class="o">]</span> <span class="c1">#=&gt; "I'm a blog post!"</span>
+</code></pre></div>
+
+
+<p>Since we’re using the native JSON type attribute, we don’t have to worry about serialization – ActiveRecord takes care of that.</p>
+
+<p>Another desirable side effect of having <code>content_attr</code> is that it allows us to use validations for our custom attributes:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="k">class</span> <span class="nc">BlogPost</span> <span class="o">&lt;</span> <span class="no">Wellspring</span><span class="o">::</span><span class="no">Entry</span>
+  <span class="n">content_attr</span> <span class="ss">:body</span><span class="p">,</span> <span class="ss">:text</span>
+
+  <span class="n">validates</span> <span class="ss">:body</span><span class="p">,</span> <span class="ss">presence</span><span class="p">:</span> <span class="kp">true</span>
+<span class="k">end</span>
+</code></pre></div>
+
+
+<p>For a simple blog, that’s all we need. But let’s introduce another 
+type of content: a link post. It will allow us to post links to other 
+blogs, with a quote and a short comment – in a <a href="http://daringfireball.net/">Daring Fireball</a> fashion. This is our new model:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="c1"># blog: app/models/blog_link.rb</span>
+<span class="k">class</span> <span class="nc">BlogLink</span> <span class="o">&lt;</span> <span class="no">Wellspring</span><span class="o">::</span><span class="no">Entry</span>
+  <span class="n">content_attr</span> <span class="ss">:url</span><span class="p">,</span> <span class="ss">:string</span>
+  <span class="n">content_attr</span> <span class="ss">:quote</span><span class="p">,</span> <span class="ss">:text</span>
+  <span class="n">content_attr</span> <span class="ss">:comment</span><span class="p">,</span> <span class="ss">:text</span>
+
+  <span class="n">validates</span> <span class="ss">:url</span><span class="p">,</span> <span class="ss">presence</span><span class="p">:</span> <span class="kp">true</span>
+  <span class="n">validates</span> <span class="ss">:quote</span><span class="p">,</span> <span class="ss">presence</span><span class="p">:</span> <span class="kp">true</span>
+<span class="k">end</span>
+</code></pre></div>
+
+
+<p>We’re now ready to start building the admin panel.</p>
+
+<hr>
+
+<h2><a name="admin-interface"></a> Admin Interface</h2>
+
+<p>Admin panel is the central part of our CMS. We want to have a single 
+interface for all types of content – without repeating any unnecessary 
+code.</p>
+
+<p>Let’s create our controller in the <code>wellspring</code> project:</p>
+
+<div class="highlight"><pre><code class="bash"><span class="nv">$ </span><span class="nb">cd </span>wellspring
+<span class="nv">$ </span>rails g controller entries
+</code></pre></div>
+
+
+<p>This single controller will be responsible for listing, creating, 
+editing and destroying entries – for descendants of Entry. We don’t want
+ to create a new controller every time we introduce a new content class.
+ <code>EntriesController</code> should be able to handle it out of the box.</p>
+
+<p>The controller itself is going to be a regular Rails <a href="https://en.wikipedia.org/wiki/Create,_read,_update_and_delete">CRUD</a>,
+ but since we want it to handle blog posts, blog links and other types 
+we don’t have yet, we need to give it some additional context. We need 
+to know which content class we’re dealing with at the given moment:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="c1"># wellspring: config/routes.rb</span>
+<span class="no">Wellspring</span><span class="o">::</span><span class="no">Engine</span><span class="o">.</span><span class="n">routes</span><span class="o">.</span><span class="n">draw</span> <span class="k">do</span>
+  <span class="n">scope</span> <span class="s2">"/:content_class"</span> <span class="k">do</span>
+    <span class="n">resources</span> <span class="ss">:entries</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
+
+
+<p>We’ve wrapped <code>entries</code> in a scope, which requires an additional <code>content_class</code> param for the <code>entries</code> resource. Example urls for our blog content will look like this:</p>
+
+<div class="highlight"><pre><code class="bash">  /admin/blog_posts/entries/
+  /admin/blog_posts/entries/new
+  /admin/blog_posts/entries/edit
+
+  /admin/blog_links/entries/
+  /admin/blog_links/entries/new
+  /admin/blog_links/entries/edit
+</code></pre></div>
+
+
+<p>Let’s go back to <code>EntriesController</code>. Here’s how it should look like:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="c1"># wellspring: app/controllers/wellspring/entries_controller.rb</span>
+<span class="n">require_dependency</span> <span class="s2">"wellspring/application_controller"</span>
+
+<span class="k">module</span> <span class="nn">Wellspring</span>
+  <span class="k">class</span> <span class="nc">EntriesController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+    <span class="n">before_action</span> <span class="ss">:set_entry</span><span class="p">,</span> <span class="ss">only</span><span class="p">:</span> <span class="o">[</span><span class="ss">:show</span><span class="p">,</span> <span class="ss">:edit</span><span class="p">,</span> <span class="ss">:update</span><span class="p">,</span> <span class="ss">:destroy</span><span class="o">]</span>
+
+    <span class="k">def</span> <span class="nf">index</span>
+      <span class="vi">@entries</span> <span class="o">=</span> <span class="no">Entry</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">type</span><span class="p">:</span> <span class="n">content_class</span><span class="p">)</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">show</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">new</span>
+      <span class="vi">@entry</span> <span class="o">=</span> <span class="no">Entry</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">type</span><span class="p">:</span> <span class="n">content_class</span><span class="p">)</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">edit</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">create</span>
+      <span class="vi">@entry</span> <span class="o">=</span> <span class="no">Entry</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">entry_params</span><span class="p">)</span>
+
+      <span class="k">if</span> <span class="vi">@entry</span><span class="o">.</span><span class="n">save</span>
+        <span class="n">redirect_to</span> <span class="n">content_entry_path</span><span class="p">(</span><span class="vi">@entry</span><span class="p">),</span> <span class="ss">notice</span><span class="p">:</span> <span class="s1">'Entry was successfully created.'</span>
+      <span class="k">else</span>
+        <span class="n">render</span> <span class="ss">:new</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">update</span>
+      <span class="k">if</span> <span class="vi">@entry</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">entry_params</span><span class="p">)</span>
+        <span class="n">redirect_to</span> <span class="n">content_entry_path</span><span class="p">(</span><span class="vi">@entry</span><span class="p">),</span> <span class="ss">notice</span><span class="p">:</span> <span class="s1">'Entry was successfully updated.'</span>
+      <span class="k">else</span>
+        <span class="n">render</span> <span class="ss">:edit</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">destroy</span>
+      <span class="vi">@entry</span><span class="o">.</span><span class="n">destroy</span>
+      <span class="n">redirect_to</span> <span class="n">content_entries_path</span><span class="p">,</span> <span class="ss">notice</span><span class="p">:</span> <span class="s1">'Entry was successfully destroyed.'</span>
+    <span class="k">end</span>
+
+    <span class="kp">private</span>
+
+    <span class="k">def</span> <span class="nf">set_entry</span>
+      <span class="vi">@entry</span> <span class="o">=</span> <span class="no">Entry</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:id</span><span class="o">]</span><span class="p">)</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">entry_params</span>
+      <span class="n">allowed_attrs</span> <span class="o">=</span> <span class="o">%</span><span class="n">i</span><span class="p">(</span><span class="nb">id</span> <span class="n">type</span> <span class="n">title</span> <span class="n">slug</span> <span class="n">published_at</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">content_class</span><span class="o">.</span><span class="n">constantize</span><span class="o">.</span><span class="n">content_attributes</span><span class="o">.</span><span class="n">keys</span><span class="p">)</span>
+
+      <span class="n">params</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="ss">:entry</span><span class="p">)</span><span class="o">.</span><span class="n">permit</span><span class="p">(</span><span class="o">*</span><span class="n">allowed_attrs</span><span class="p">)</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">content_class</span>
+      <span class="vi">@content_class</span> <span class="o">||=</span> <span class="n">params</span><span class="o">[</span><span class="ss">:content_class</span><span class="o">].</span><span class="n">classify</span>
+    <span class="k">end</span>
+    <span class="n">helper_method</span> <span class="ss">:content_class</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
+
+
+<p>Thanks to <code>content_class</code>, Entries controller knows which 
+type of content is being processed. Besides that, we’ve introduced 
+another non-standard tweak to Rails' <a href="http://edgeapi.rubyonrails.org/classes/ActionController/StrongParameters.html">strong parameters</a>. We’ve written the <code>entry_params</code> method in a way that it permits custom content params, based on <code>content_class</code>. So in our case it’s the equivalent of:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="c1"># blog post:</span>
+<span class="n">params</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="ss">:entry</span><span class="p">)</span><span class="o">.</span><span class="n">permit</span><span class="p">(</span><span class="ss">:id</span><span class="p">,</span> <span class="ss">:type</span><span class="p">,</span> <span class="ss">:title</span><span class="p">,</span> <span class="ss">:slug</span><span class="p">,</span> <span class="ss">:published_at</span><span class="p">,</span> <span class="ss">:body</span><span class="p">)</span>
+
+<span class="c1"># blog link:</span>
+<span class="n">params</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="ss">:entry</span><span class="p">)</span><span class="o">.</span><span class="n">permit</span><span class="p">(</span><span class="ss">:id</span><span class="p">,</span> <span class="ss">:type</span><span class="p">,</span> <span class="ss">:title</span><span class="p">,</span> <span class="ss">:slug</span><span class="p">,</span> <span class="ss">:published_at</span><span class="p">,</span> <span class="ss">:url</span><span class="p">,</span> <span class="ss">:quote</span><span class="p">,</span> <span class="ss">:comment</span><span class="p">)</span>
+</code></pre></div>
+
+
+<p>You’ll also notice that we have non-standard routes (<code>content_entries_path</code>, <code>content_entry_path</code> etc.). This is just a custom wrapper for the <code>entries</code> routes, so we don’t have to pass <code>content_class</code> to routes every time:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="c1"># wellspring: app/controllers/wellspring/application_controller.rb</span>
+<span class="k">def</span> <span class="nf">content_entries_path</span>
+  <span class="n">entries_path</span><span class="p">(</span><span class="n">content_class</span><span class="p">:</span> <span class="n">content_class</span><span class="o">.</span><span class="n">tableize</span><span class="p">)</span>
+<span class="k">end</span>
+<span class="n">helper_method</span> <span class="ss">:content_entries_path</span>
+</code></pre></div>
+
+
+<hr>
+
+<p>This is how our basic panel looks:</p>
+
+<p></p><figure class="center">
+  <img src="Tutorial:%20How%20to%20Build%20a%20CMS%20in%20Ruby%20on%20Rails_files/wellspring-sidebar.png">
+</figure><p></p>
+
+<p>As you can see on the left, we have a list of all the content classes
+ we support. But how do we know which content classes are available in 
+the app?</p>
+
+<p>There are a couple ways to determine it. Most logical one would be to get the list of all descendants of <code>Entry</code>. There is a catch, though:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="c1"># rails console</span>
+<span class="o">&gt;&gt;</span> <span class="no">Wellspring</span><span class="o">::</span><span class="no">Entry</span><span class="o">.</span><span class="n">descendants</span>
+<span class="o">=&gt;</span> <span class="o">[]</span>
+<span class="o">&gt;&gt;</span> <span class="no">BlogPost</span>
+<span class="c1">#=&gt; BlogPost (call 'BlogPost.connection' to establish a connection)</span>
+<span class="o">&gt;&gt;</span> <span class="no">Wellspring</span><span class="o">::</span><span class="no">Entry</span><span class="o">.</span><span class="n">descendants</span>
+<span class="c1">#=&gt; [BlogPost (call 'BlogPost.connection' to establish a connection)]</span>
+<span class="o">&gt;&gt;</span> <span class="no">BlogLink</span>
+<span class="c1">#=&gt; BlogLink (call 'BlogLink.connection' to establish a connection)</span>
+<span class="o">&gt;&gt;</span> <span class="no">Wellspring</span><span class="o">::</span><span class="no">Entry</span><span class="o">.</span><span class="n">descendants</span>
+<span class="c1">#=&gt; [BlogPost (call 'BlogPost.connection' to establish a connection), BlogLink (call 'BlogLink.connection' to establish a connection)]</span>
+</code></pre></div>
+
+
+<p>When we first call <code>Wellspring::Entry.descendants</code> it 
+returns an empty array. This is the magic of autoload in Rails – classes
+ are not loaded until they are first called. This means that Rails 
+doesn’t know anything about the existence of BlogPost until we try to 
+use it. When Rails sees a call to an unknown constant, it attempts to 
+load it from the autoload path, using <a href="http://apidock.com/ruby/Module/const_missing">const_missing</a>.</p>
+
+<p>So, in order for <code>Wellspring::Entry.descendants</code> to work, we’d have to either enable the “<a href="http://blog.arkency.com/2013/12/rails4-preloading/">eager_load</a>” setting for development, or <code>require</code>
+ content class files manually to bypass autoload. We don’t want to mess 
+with the defaults, though, so we’ll solve this in another way: with our 
+own configuration.</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="c1"># wellspring: lib/wellspring/configuration.rb</span>
+<span class="k">module</span> <span class="nn">Wellspring</span>
+  <span class="k">class</span> <span class="nc">Configuration</span>
+    <span class="kp">attr_accessor</span> <span class="ss">:content_classes</span>
+
+    <span class="k">def</span> <span class="nf">initialize</span>
+      <span class="vi">@content_classes</span> <span class="o">=</span> <span class="o">[].</span><span class="n">freeze</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">configuration</span>
+    <span class="vi">@configuration</span> <span class="o">||=</span> <span class="no">Configuration</span><span class="o">.</span><span class="n">new</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">configure</span>
+    <span class="k">yield</span> <span class="n">configuration</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
+
+
+<p>Next, require our configuration in <code>lib/wellspring.rb</code>:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="c1"># wellspring: lib/wellspring.rb</span>
+<span class="nb">require</span> <span class="s2">"wellspring/engine"</span>
+<span class="nb">require</span> <span class="s2">"wellspring/configuration"</span>
+
+<span class="k">module</span> <span class="nn">Wellspring</span>
+<span class="k">end</span>
+</code></pre></div>
+
+
+<p>Right now, we only have one configuration option: <code>content_classes</code>, which is an empty array by default. Our application will have to explicitly declare the list of content classes it provides:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="c1"># blog: config/initializers/wellspring.rb</span>
+<span class="no">Wellspring</span><span class="o">.</span><span class="n">configure</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
+  <span class="n">config</span><span class="o">.</span><span class="n">content_classes</span> <span class="o">=</span> <span class="sx">%w(BlogPost BlogLink)</span>
+<span class="k">end</span>
+</code></pre></div>
+
+
+<p>Add the initializer above to the blog app and restart your server. Go back to Wellspring and add the sidebar markup in <code>application.html.erb</code>:</p>
+
+<div class="highlight"><pre><code class="rhtml"><span class="nt">&lt;ul&gt;</span>
+  <span class="cp">&lt;%</span> <span class="no">Wellspring</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">content_classes</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">class_name</span><span class="o">|</span> <span class="cp">%&gt;</span>
+    <span class="nt">&lt;li&gt;</span>
+      <span class="cp">&lt;%=</span> <span class="n">link_to</span> <span class="n">class_name</span><span class="o">.</span><span class="n">tableize</span><span class="o">.</span><span class="n">titleize</span><span class="p">,</span> <span class="n">entries_path</span><span class="p">(</span><span class="n">content_class</span><span class="p">:</span> <span class="n">class_name</span><span class="o">.</span><span class="n">tableize</span><span class="p">)</span> <span class="cp">%&gt;</span>
+    <span class="nt">&lt;/li&gt;</span>
+  <span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span>
+<span class="nt">&lt;/ul&gt;</span>
+</code></pre></div>
+
+
+<p>Our <code>index</code> view of <code>EntriesController</code> should look like this:</p>
+
+<div class="highlight"><pre><code class="rhtml"><span class="nt">&lt;h1&gt;</span><span class="cp">&lt;%=</span> <span class="n">content_class</span><span class="o">.</span><span class="n">tableize</span><span class="o">.</span><span class="n">titleize</span> <span class="cp">%&gt;</span><span class="nt">&lt;/h1&gt;</span>
+
+<span class="cp">&lt;%=</span> <span class="n">link_to</span> <span class="s2">"New </span><span class="si">#{</span><span class="n">content_class</span><span class="o">.</span><span class="n">titleize</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">new_content_entry_path</span><span class="p">,</span> <span class="ss">class</span><span class="p">:</span> <span class="s1">'btn btn-primary space-2'</span> <span class="cp">%&gt;</span>
+
+<span class="nt">&lt;table</span> <span class="na">class=</span><span class="s">"table space-4"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;thead&gt;</span>
+    <span class="nt">&lt;tr&gt;</span>
+      <span class="nt">&lt;th&gt;</span>Title<span class="nt">&lt;/th&gt;</span>
+      <span class="nt">&lt;th&gt;</span>Created at<span class="nt">&lt;/th&gt;</span>
+      <span class="nt">&lt;th&gt;</span>Published at<span class="nt">&lt;/th&gt;</span>
+      <span class="nt">&lt;th</span> <span class="na">colspan=</span><span class="s">"2"</span><span class="nt">&gt;&lt;/th&gt;</span>
+    <span class="nt">&lt;/tr&gt;</span>
+  <span class="nt">&lt;/thead&gt;</span>
+
+  <span class="nt">&lt;tbody&gt;</span>
+    <span class="cp">&lt;%</span> <span class="vi">@entries</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">entry</span><span class="o">|</span> <span class="cp">%&gt;</span>
+      <span class="nt">&lt;tr&gt;</span>
+        <span class="nt">&lt;td&gt;</span><span class="cp">&lt;%=</span> <span class="n">link_to</span> <span class="n">entry</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="n">content_entry_path</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span> <span class="cp">%&gt;</span><span class="nt">&lt;/td&gt;</span>
+        <span class="nt">&lt;td&gt;</span><span class="cp">&lt;%=</span> <span class="n">time_ago_in_words</span> <span class="n">entry</span><span class="o">.</span><span class="n">created_at</span> <span class="cp">%&gt;</span> ago<span class="nt">&lt;/td&gt;</span>
+        <span class="nt">&lt;td&gt;</span><span class="cp">&lt;%=</span> <span class="n">entry</span><span class="o">.</span><span class="n">published_at</span> <span class="cp">%&gt;</span><span class="nt">&lt;/td&gt;</span>
+        <span class="nt">&lt;td&gt;</span><span class="cp">&lt;%=</span> <span class="n">link_to</span> <span class="s1">'Edit'</span><span class="p">,</span> <span class="n">edit_content_entry_path</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span> <span class="cp">%&gt;</span><span class="nt">&lt;/td&gt;</span>
+        <span class="nt">&lt;td&gt;</span><span class="cp">&lt;%=</span> <span class="n">link_to</span> <span class="s1">'Destroy'</span><span class="p">,</span> <span class="n">content_entry_path</span><span class="p">(</span><span class="n">entry</span><span class="p">),</span> <span class="nb">method</span><span class="p">:</span> <span class="ss">:delete</span><span class="p">,</span> <span class="ss">data</span><span class="p">:</span> <span class="p">{</span> <span class="ss">confirm</span><span class="p">:</span> <span class="s1">'Are you sure?'</span> <span class="p">}</span> <span class="cp">%&gt;</span><span class="nt">&lt;/td&gt;</span>
+      <span class="nt">&lt;/tr&gt;</span>
+    <span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span>
+  <span class="nt">&lt;/tbody&gt;</span>
+<span class="nt">&lt;/table&gt;</span>
+</code></pre></div>
+
+
+<p>With that in place, we can start implementing the form.</p>
+
+<h3>Entry Form</h3>
+
+<p>Our universal content form should display input fields for <code>title</code>, <code>slug</code>, <code>author_name</code> and <code>published_at</code>, as well as fields for custom content attributes, based on the <code>content_class</code> we’re creating/editing:</p>
+
+<div class="highlight"><pre><code class="rhtml">  <span class="cp">&lt;%=</span> <span class="n">simple_form_for</span><span class="p">(</span><span class="vi">@entry</span><span class="p">,</span> <span class="ss">as</span><span class="p">:</span> <span class="ss">:entry</span><span class="p">,</span> <span class="ss">url</span><span class="p">:</span> <span class="n">entries_path</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span> <span class="cp">%&gt;</span>
+    <span class="cp">&lt;%=</span> <span class="n">f</span><span class="o">.</span><span class="n">hidden_field</span> <span class="ss">:type</span><span class="p">,</span> <span class="ss">value</span><span class="p">:</span> <span class="vi">@entry</span><span class="o">.</span><span class="n">type</span> <span class="cp">%&gt;</span>
+
+    <span class="cp">&lt;%=</span> <span class="n">f</span><span class="o">.</span><span class="n">input</span> <span class="ss">:title</span> <span class="cp">%&gt;</span>
+
+    <span class="cp">&lt;%</span> <span class="vi">@entry</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">content_attributes</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">attr_name</span><span class="p">,</span> <span class="n">attr_type</span><span class="o">|</span> <span class="cp">%&gt;</span>
+      <span class="cp">&lt;%=</span> <span class="n">f</span><span class="o">.</span><span class="n">input</span> <span class="n">attr_name</span><span class="p">,</span> <span class="ss">as</span><span class="p">:</span> <span class="n">attr_type</span> <span class="cp">%&gt;</span>
+    <span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span>
+
+    <span class="cp">&lt;%=</span> <span class="n">f</span><span class="o">.</span><span class="n">input</span> <span class="ss">:slug</span> <span class="cp">%&gt;</span>
+    <span class="cp">&lt;%=</span> <span class="n">f</span><span class="o">.</span><span class="n">input</span> <span class="ss">:author_name</span> <span class="cp">%&gt;</span>
+    <span class="cp">&lt;%=</span> <span class="n">f</span><span class="o">.</span><span class="n">input</span> <span class="ss">:published_at</span> <span class="cp">%&gt;</span>
+
+    <span class="cp">&lt;%=</span> <span class="n">f</span><span class="o">.</span><span class="n">submit</span> <span class="s2">"Save"</span> <span class="cp">%&gt;</span>
+  <span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span>
+</code></pre></div>
+
+
+<p>And here’s our form in action:
+</p><figure class="center">
+  <img src="Tutorial:%20How%20to%20Build%20a%20CMS%20in%20Ruby%20on%20Rails_files/wellspring-form.png">
+</figure><p></p>
+
+<p>As you can see, it automatically adjusts to the content class we’re 
+dealing with at the moment, displaying proper fields. But how does it 
+know whether a field should be a textarea, an input, or a date dropdown?
+ Here, we’re taking advantage of <a href="https://github.com/plataformatec/simple_form">simple_form</a> and the fact that it <a href="https://github.com/plataformatec/simple_form#available-input-types-and-defaults-for-each-column-type">maps data types to input types</a>. We’ve declared our content attributes as <code>content_attr :comment, :text</code>, so simple_form knows that a <code>:text</code> attr should be a textarea, and a <code>:string</code> attr should be displayed a regular input.</p>
+
+<hr>
+
+<h2><a name="user-interface"></a>Blog</h2>
+
+<p>Now that we have a basic admin interface, we can start displaying our blog posts</p>
+
+<div class="highlight"><pre><code class="bash"><span class="nv">$ </span><span class="nb">cd </span>blog
+<span class="nv">$ </span>rails g controller Posts index show --assets<span class="o">=</span><span class="nb">false</span> --helper<span class="o">=</span><span class="nb">false</span>
+</code></pre></div>
+
+
+<p>Change <code>routes.rb</code> to this:</p>
+
+<div class="highlight"><pre><code class="bash"><span class="c"># blog: config/routes.rb</span>
+Rails.application.routes.draw <span class="k">do</span>
+<span class="k">  </span>mount Wellspring::Engine, at: <span class="s2">"/admin"</span>
+
+  get <span class="s1">'/:slug'</span>, to: <span class="s1">'blog_posts#show'</span>
+  root to: <span class="s1">'blog_posts#index'</span>
+end
+</code></pre></div>
+
+
+<p>In our posts controller, we need two actions: index &amp; show. We should display only published blog posts:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="c1"># blog: app/controllers/posts_controller.rb</span>
+<span class="k">class</span> <span class="nc">PostsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+  <span class="k">def</span> <span class="nf">index</span>
+    <span class="vi">@posts</span> <span class="o">=</span> <span class="no">BlogPost</span><span class="o">.</span><span class="n">published</span><span class="o">.</span><span class="n">order</span><span class="p">(</span><span class="s1">'id desc'</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">show</span>
+    <span class="vi">@post</span> <span class="o">=</span> <span class="no">BlogPost</span><span class="o">.</span><span class="n">published</span><span class="o">.</span><span class="n">find_by_slug!</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:slug</span><span class="o">]</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
+
+
+<p>But we want to display both BlogPosts and BlogLinks in a single list. Let’s change our code a bit:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="c1"># blog: app/controllers/posts_controller.rb</span>
+<span class="k">class</span> <span class="nc">PostsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+  <span class="k">def</span> <span class="nf">index</span>
+    <span class="vi">@posts</span> <span class="o">=</span> <span class="n">blog_posts_with_links</span><span class="o">.</span><span class="n">order</span><span class="p">(</span><span class="s1">'id desc'</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">show</span>
+    <span class="vi">@post</span> <span class="o">=</span> <span class="n">blog_posts_with_links</span><span class="o">.</span><span class="n">find_by_slug!</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:slug</span><span class="o">]</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="kp">private</span>
+
+  <span class="k">def</span> <span class="nf">blog_posts_with_links</span>
+    <span class="no">Wellspring</span><span class="o">::</span><span class="no">Entry</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">type</span><span class="p">:</span> <span class="sx">%w(BlogPost BlogLink)</span><span class="p">)</span><span class="o">.</span><span class="n">published</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
+
+
+<p>Now we’re ready to move on to the views:</p>
+
+<div class="highlight"><pre><code class="rhtml"><span class="c">&lt;!-- blog: app/views/posts/index.html.erb --&gt;</span>
+<span class="nt">&lt;ul</span> <span class="na">class=</span><span class="s">"posts"</span><span class="nt">&gt;</span>
+  <span class="cp">&lt;%</span> <span class="vi">@posts</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">post</span><span class="o">|</span> <span class="cp">%&gt;</span>
+    <span class="nt">&lt;li&gt;</span><span class="cp">&lt;%=</span> <span class="n">render</span> <span class="n">blog_post</span> <span class="cp">%&gt;</span><span class="nt">&lt;/li&gt;</span>
+  <span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span>
+<span class="nt">&lt;/ul&gt;</span>
+
+<span class="c">&lt;!-- blog: app/views/blog_posts/blog_post.html.erb --&gt;</span>
+<span class="nt">&lt;h2&gt;</span><span class="cp">&lt;%=</span> <span class="n">link_to</span> <span class="n">blog_post</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="n">blog_post</span><span class="o">.</span><span class="n">slug</span> <span class="cp">%&gt;</span><span class="nt">&lt;/h2&gt;</span>
+<span class="nt">&lt;p</span> <span class="na">class=</span><span class="s">"meta"</span><span class="nt">&gt;</span><span class="cp">&lt;%=</span> <span class="n">blog_post</span><span class="o">.</span><span class="n">author_name</span> <span class="cp">%&gt;</span> <span class="cp">&lt;%=</span> <span class="n">blog_post</span><span class="o">.</span><span class="n">published_at</span> <span class="cp">%&gt;</span><span class="nt">&lt;/p&gt;</span>
+<span class="nt">&lt;p</span> <span class="na">class=</span><span class="s">"intro"</span><span class="nt">&gt;</span><span class="cp">&lt;%=</span> <span class="n">truncate</span><span class="p">(</span><span class="n">blog_post</span><span class="o">.</span><span class="n">body</span><span class="p">,</span> <span class="ss">length</span><span class="p">:</span> <span class="mi">500</span><span class="p">)</span> <span class="cp">%&gt;</span><span class="nt">&lt;/p&gt;</span>
+
+<span class="c">&lt;!-- blog: app/views/blog_links/blog_link.html.erb --&gt;</span>
+<span class="nt">&lt;h2&gt;</span><span class="cp">&lt;%=</span> <span class="n">link_to</span> <span class="n">blog_link</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="n">blog_link</span><span class="o">.</span><span class="n">url</span> <span class="cp">%&gt;</span> <span class="ni">&amp;#8594;</span><span class="nt">&lt;/h2&gt;</span>
+<span class="nt">&lt;blockquote&gt;</span>
+  <span class="cp">&lt;%=</span> <span class="n">simple_format</span> <span class="n">blog_link</span><span class="o">.</span><span class="n">quote</span> <span class="cp">%&gt;</span>
+<span class="nt">&lt;/blockquote&gt;</span>
+<span class="nt">&lt;p</span> <span class="na">class=</span><span class="s">"comment"</span><span class="nt">&gt;</span><span class="cp">&lt;%=</span> <span class="n">blog_link</span><span class="o">.</span><span class="n">comment</span> <span class="cp">%&gt;</span><span class="nt">&lt;/p&gt;</span>
+
+<span class="c">&lt;!-- blog: app/views/blog_posts/show.html.erb --&gt;</span>
+<span class="nt">&lt;h1&gt;</span><span class="cp">&lt;%=</span> <span class="vi">@post</span><span class="o">.</span><span class="n">title</span> <span class="cp">%&gt;</span><span class="nt">&lt;/h1&gt;</span>
+<span class="nt">&lt;p</span> <span class="na">class=</span><span class="s">"meta"</span><span class="nt">&gt;</span><span class="cp">&lt;%=</span> <span class="vi">@post</span><span class="o">.</span><span class="n">author_name</span> <span class="cp">%&gt;</span> <span class="cp">&lt;%=</span> <span class="vi">@post</span><span class="o">.</span><span class="n">published_at</span> <span class="cp">%&gt;</span><span class="nt">&lt;/p&gt;</span>
+
+<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"post-body"</span><span class="nt">&gt;</span>
+  <span class="cp">&lt;%=</span> <span class="vi">@post</span><span class="o">.</span><span class="n">body</span> <span class="cp">%&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+</code></pre></div>
+
+
+<p>We now have a basic blog with a list of blog posts and links, ordered chronologically:</p>
+
+<p></p><figure class="center">
+  <img src="Tutorial:%20How%20to%20Build%20a%20CMS%20in%20Ruby%20on%20Rails_files/wellspring-blog.png">
+</figure><p></p>
+
+<hr>
+
+<h2><a name="search"></a> Search</h2>
+
+<p>Every decent content site should have its own custom search and our 
+blog is no different. Since our database of choice supports full-text 
+search out of the box, we’ll be taking advantage of that – without any 
+additional gems.</p>
+
+<p>Let’s create a new table for search index.</p>
+
+<div class="highlight"><pre><code class="bash"><span class="nv">$ </span><span class="nb">cd </span>wellspring
+<span class="nv">$ </span>rails g model EntrySearchData entry_id:integer attr_name:string search_data:tsvector raw_data:text --force-plural
+<span class="c"># I've added `--force-plural` to prevent Rails from inflecting `data` to `datum`.</span>
+</code></pre></div>
+
+
+<p>Edit the migration file:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="k">class</span> <span class="nc">CreateWellspringEntrySearchData</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Migration</span>
+  <span class="k">def</span> <span class="nf">change</span>
+    <span class="n">create_table</span> <span class="ss">:wellspring_entry_search_data</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="o">|</span>
+      <span class="n">t</span><span class="o">.</span><span class="n">integer</span> <span class="ss">:entry_id</span><span class="p">,</span> <span class="ss">index</span><span class="p">:</span> <span class="kp">true</span>
+      <span class="n">t</span><span class="o">.</span><span class="n">string</span> <span class="ss">:attr_name</span>
+      <span class="n">t</span><span class="o">.</span><span class="n">tsvector</span> <span class="ss">:search_data</span>
+      <span class="n">t</span><span class="o">.</span><span class="n">text</span> <span class="ss">:raw_data</span>
+
+      <span class="n">t</span><span class="o">.</span><span class="n">timestamps</span> <span class="ss">null</span><span class="p">:</span> <span class="kp">false</span>
+    <span class="k">end</span>
+
+    <span class="n">execute</span> <span class="s1">'create index idx_search_data on wellspring_entries_search_data using gin(search_data)'</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
+
+
+<p>Now copy the migration to our blog and migrate the database:</p>
+
+<div class="highlight"><pre><code class="bash"><span class="nv">$ </span><span class="nb">cd </span>blog
+<span class="nv">$ </span>rake wellspring:install:migrations <span class="o">&amp;&amp;</span> rake db:migrate
+</code></pre></div>
+
+
+<p>Each record in <code>wellspring_etry_search_data</code> will hold information about a single content attribute. In our case, there will be two records for a blog post: one for <code>title</code> and one for <code>body</code>. The <code>search_data</code> column is our search index – a <a href="http://www.postgresql.org/docs/8.3/static/datatype-textsearch.html">tsvector</a>, which holds normalized words, sorted alphabetically, with duplicates removed. The <code>raw_data</code> column is just a copy of the indexed text. It’s not necessary, but I’ve added it for convenience.</p>
+
+<p>We have our index. Now we need to tell Wellspring which attributes should be searchable:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="c1"># blog: app/models/blog_post.rb</span>
+<span class="k">class</span> <span class="nc">BlogPost</span> <span class="o">&lt;</span> <span class="no">Wellspring</span><span class="o">::</span><span class="no">Entry</span>
+  <span class="n">searchable_attributes</span> <span class="ss">:title</span><span class="p">,</span> <span class="ss">:body</span>
+  <span class="c1"># ...</span>
+<span class="k">end</span>
+</code></pre></div>
+
+
+<p>We haven’t implemented <code>searchable_attributes</code> yet, so let’s go back to the Wellspring project and do it now.</p>
+
+<p>Search is a part of Entry, but we’d rather avoid dumping search code straight into <code>entry.rb</code>. Let’s isolate it in a concern:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="c1"># wellspring: app/models/wellspring/concerns/searchable.rb</span>
+<span class="k">module</span> <span class="nn">Wellspring</span>
+  <span class="k">module</span> <span class="nn">Concerns</span>
+    <span class="k">module</span> <span class="nn">Searchable</span>
+      <span class="kp">extend</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Concern</span>
+
+      <span class="n">included</span> <span class="k">do</span>
+        <span class="n">has_many</span> <span class="ss">:search_data</span><span class="p">,</span> <span class="n">class_name</span><span class="p">:</span> <span class="s1">'Wellspring::EntrySearchData'</span>
+      <span class="k">end</span>
+
+      <span class="k">module</span> <span class="nn">ClassMethods</span>
+        <span class="k">def</span> <span class="nf">searchable_attributes</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+          <span class="vi">@searchable_attributes</span> <span class="o">=</span> <span class="n">args</span> <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">any?</span>
+          <span class="vi">@searchable_attributes</span> <span class="o">||=</span> <span class="o">[]</span>
+        <span class="k">end</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="c1"># wellspring: app/models/wellspring/entry.rb</span>
+<span class="k">module</span> <span class="nn">Wellspring</span>
+  <span class="k">class</span> <span class="nc">Entry</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+    <span class="kp">include</span> <span class="no">Wellspring</span><span class="o">::</span><span class="no">Concerns</span><span class="o">::</span><span class="no">Searchable</span>
+
+    <span class="c1"># ...</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
+
+
+<p>We have a table for search index, we know which attributes should be searchable. Let’s now implement the indexer.</p>
+
+<p>Index should update itself every time an entry is updated, so let’s use an <code>after_save</code> callback for this:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="c1"># wellspring: app/models/wellspring/concerns/searchable.rb</span>
+<span class="k">module</span> <span class="nn">Wellspring</span>
+  <span class="k">module</span> <span class="nn">Concerns</span>
+    <span class="k">module</span> <span class="nn">Searchable</span>
+      <span class="kp">extend</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Concern</span>
+
+      <span class="n">included</span> <span class="k">do</span>
+        <span class="n">has_many</span> <span class="ss">:search_data</span><span class="p">,</span> <span class="n">class_name</span><span class="p">:</span> <span class="s1">'Wellspring::EntrySearchData'</span>
+        <span class="n">after_save</span> <span class="ss">:update_search_index</span>
+      <span class="k">end</span>
+
+      <span class="c1"># ...</span>
+
+      <span class="k">def</span> <span class="nf">search_attributes</span>
+        <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">searchable_attributes</span><span class="o">.</span><span class="n">each_with_object</span><span class="p">({})</span> <span class="k">do</span> <span class="o">|</span><span class="n">attr_name</span><span class="p">,</span> <span class="n">search_data</span><span class="o">|</span>
+          <span class="n">search_data</span><span class="o">[</span><span class="n">attr_name</span><span class="o">]</span> <span class="o">=</span> <span class="nb">send</span><span class="p">(</span><span class="n">attr_name</span><span class="p">)</span>
+        <span class="k">end</span>
+      <span class="k">end</span>
+
+      <span class="k">def</span> <span class="nf">update_search_index</span>
+        <span class="no">Wellspring</span><span class="o">::</span><span class="no">EntrySearchData</span><span class="o">.</span><span class="n">index_entry_data</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">search_attributes</span><span class="p">)</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
+
+
+<p>And the code responsible for updating our index table:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="c1"># wellspring: app/models/wellspring/entry_search_data.rb</span>
+<span class="k">module</span> <span class="nn">Wellspring</span>
+  <span class="k">class</span> <span class="nc">EntrySearchData</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+    <span class="n">belongs_to</span> <span class="ss">:entry</span>
+
+    <span class="n">validates</span> <span class="ss">:entry_id</span><span class="p">,</span> <span class="ss">presence</span><span class="p">:</span> <span class="kp">true</span>
+    <span class="n">validates</span> <span class="ss">:attr_name</span><span class="p">,</span> <span class="ss">presence</span><span class="p">:</span> <span class="kp">true</span><span class="p">,</span> <span class="ss">uniqueness</span><span class="p">:</span> <span class="p">{</span> <span class="ss">scope</span><span class="p">:</span> <span class="ss">:entry_id</span> <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">index_entry_data</span><span class="p">(</span><span class="n">entry_id</span><span class="p">,</span> <span class="n">search_attributes</span><span class="p">)</span>
+      <span class="n">search_attributes</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">attr_name</span><span class="p">,</span> <span class="n">value</span><span class="o">|</span>
+        <span class="n">find_or_create_by</span><span class="p">(</span><span class="n">entry_id</span><span class="p">:</span> <span class="n">entry_id</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">:</span> <span class="n">attr_name</span><span class="p">)</span>
+
+        <span class="n">where</span><span class="p">(</span><span class="n">entry_id</span><span class="p">:</span> <span class="n">entry_id</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">:</span> <span class="n">attr_name</span><span class="p">)</span><span class="o">.</span><span class="n">update_all</span><span class="p">(</span><span class="o">[</span>
+          <span class="s2">"raw_data = :search_data, search_data = to_tsvector('english', :search_data)"</span><span class="p">,</span>
+          <span class="n">search_data</span><span class="p">:</span> <span class="n">value</span>
+        <span class="o">]</span><span class="p">)</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
+
+
+<p>With our indexer ready, let’s now index our existing entries:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="c1"># rails console</span>
+<span class="no">Wellspring</span><span class="o">::</span><span class="no">Entry</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">each</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:update_search_index</span><span class="p">)</span>
+</code></pre></div>
+
+
+<h3>Search Form</h3>
+
+<p>Now, for the actual search. Let’s add a new action to our blog posts controller:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="c1"># blog: app/controllers/posts_controller.rb</span>
+<span class="k">class</span> <span class="nc">PostsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+  <span class="c1"># ...</span>
+
+  <span class="k">def</span> <span class="nf">search</span>
+    <span class="vi">@posts</span> <span class="o">=</span> <span class="n">blog_posts_with_links</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:query</span><span class="o">]</span><span class="p">)</span>
+    <span class="n">render</span> <span class="ss">action</span><span class="p">:</span> <span class="s1">'index'</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="c1"># blog: config/routes.rb</span>
+<span class="n">get</span> <span class="s1">'search'</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="s1">'posts#search'</span><span class="p">,</span> <span class="ss">as</span><span class="p">:</span> <span class="ss">:search</span>
+</code></pre></div>
+
+
+<p>Next, put the search form in <code>application.html.erb</code>:</p>
+
+<div class="highlight"><pre><code class="rhtml"># blog: app/views/layouts/application.html.erb
+<span class="cp">&lt;%=</span> <span class="n">form_tag</span><span class="p">(</span><span class="n">search_path</span><span class="p">,</span> <span class="nb">method</span><span class="p">:</span> <span class="ss">:get</span><span class="p">)</span> <span class="k">do</span> <span class="cp">%&gt;</span>
+  <span class="cp">&lt;%=</span> <span class="n">text_field_tag</span> <span class="s1">'query'</span><span class="p">,</span> <span class="s1">''</span><span class="p">,</span> <span class="ss">placeholder</span><span class="p">:</span> <span class="s1">'Search'</span> <span class="cp">%&gt;</span>
+<span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span>
+</code></pre></div>
+
+
+<p>That’s is the interface we want: we want a <code>search</code> method in <code>Entry</code>, which takes a <code>query</code> param and returns a list of entries matching the given phrase.</p>
+
+<p>Here’s the implementation:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="c1"># wellspring: app/models/wellspring/concerns/searchable.rb</span>
+<span class="k">module</span> <span class="nn">Wellspring</span>
+  <span class="k">module</span> <span class="nn">Concerns</span>
+    <span class="k">module</span> <span class="nn">Searchable</span>
+      <span class="c1"># ...</span>
+
+      <span class="k">module</span> <span class="nn">ClassMethods</span>
+        <span class="c1"># ...</span>
+
+        <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+          <span class="nb">select</span><span class="p">(</span><span class="s1">'DISTINCT ON (entry_id) entry_id, wellspring_entries.*'</span><span class="p">)</span><span class="o">.</span>
+            <span class="n">joins</span><span class="p">(</span><span class="ss">:search_data</span><span class="p">)</span><span class="o">.</span>
+            <span class="n">where</span><span class="p">(</span><span class="s2">"search_data @@ plainto_tsquery('english', :q)"</span><span class="p">,</span> <span class="ss">q</span><span class="p">:</span> <span class="n">query</span><span class="p">)</span><span class="o">.</span>
+            <span class="n">order</span><span class="p">(</span><span class="s2">"entry_id, ts_rank(search_data, plainto_tsquery('%s')) desc"</span> <span class="o">%</span> <span class="nb">send</span><span class="p">(</span><span class="ss">:sanitize_sql</span><span class="p">,</span> <span class="n">query</span><span class="p">))</span>
+        <span class="k">end</span>
+      <span class="k">end</span>
+
+      <span class="c1"># ...</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
+
+
+<p>Our <code>search</code> method takes the <code>query</code> argument, looks for the phrase in the <code>wellspring_entry_search_data</code> table and returns matching entries, sorted by relevance. The “<code>DISTINCT ON</code>” part is there to remove duplicated results, in case we find the searched phrase in both <code>title</code> and <code>body</code>.</p>
+
+<p>There are certain aspects we could definitely improve. Our search doesn’t support “weights”, so we treat results found in <code>title</code>  and <code>body</code> as equally important, whereas it makes much more sense for <code>title</code> to have a priority. Also, we use a hardcoded stemmer (<code>english</code>), which should be moved to configuration. However, for the purpose of this tutorial, we’ll stick with what we have.</p>
+
+<hr>
+
+<h2><a name="user-authentication"></a>User Authentication</h2>
+
+<p>Until now we’ve been ignoring the need for basic security. It’s time to change that.</p>
+
+<p>Since reusability is one of our main goals, we’re not going to 
+re-invent authentication. We assume that Wellspring can be used as a 
+part of an  application, which already has its own user auth. Our CMS 
+should be able to attach to existing sessions. Whether it’s <a href="https://github.com/plataformatec/devise">devise</a>, <a href="https://github.com/thoughtbot/clearance">clearance</a> or a custom solution – we don’t really care.</p>
+
+<p>For that to work, Wellspring needs to know two things: user who’s currently logged-in (<code>current_user</code>)
+ and the url we’ll be redirecting non-authenticated users to. Our blog 
+app should provide this information, so let’s put it in the config we 
+created earlier:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="c1"># blog: config/initializers/wellspring.rb</span>
+<span class="no">Wellspring</span><span class="o">.</span><span class="n">configure</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
+  <span class="c1"># ...</span>
+
+  <span class="n">config</span><span class="o">.</span><span class="n">current_user_lookup</span> <span class="k">do</span>
+    <span class="no">User</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">role</span><span class="p">:</span> <span class="s1">'admin'</span><span class="p">)</span><span class="o">.</span><span class="n">find_by_auth_token</span><span class="p">(</span><span class="n">cookies</span><span class="o">[</span><span class="ss">:auth_token</span><span class="o">]</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="n">config</span><span class="o">.</span><span class="n">sign_in_url</span> <span class="k">do</span>
+    <span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">routes</span><span class="o">.</span><span class="n">url_helpers</span><span class="o">.</span><span class="n">login_url</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
+
+
+<p>Now change the implementation of wellspring’s <code>Configuration</code> class:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="k">module</span> <span class="nn">Wellspring</span>
+  <span class="k">class</span> <span class="nc">Configuration</span>
+    <span class="kp">attr_accessor</span> <span class="ss">:content_classes</span>
+
+    <span class="k">def</span> <span class="nf">initialize</span>
+      <span class="vi">@content_classes</span> <span class="o">=</span> <span class="o">[].</span><span class="n">freeze</span>
+      <span class="vi">@current_user_lookup</span> <span class="o">=</span> <span class="no">Proc</span><span class="o">.</span><span class="n">new</span> <span class="p">{</span> <span class="k">raise</span> <span class="s2">"No user lookup provided!"</span> <span class="p">}</span>
+      <span class="vi">@sign_in_url</span> <span class="o">=</span> <span class="no">Proc</span><span class="o">.</span><span class="n">new</span> <span class="p">{</span> <span class="k">raise</span> <span class="s2">"No sign in url provided!"</span> <span class="p">}</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">current_user_lookup</span><span class="p">(</span><span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+      <span class="vi">@current_user_lookup</span> <span class="o">=</span> <span class="n">block</span> <span class="k">if</span> <span class="n">block</span>
+      <span class="vi">@current_user_lookup</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">sign_in_url</span><span class="p">(</span><span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+      <span class="vi">@sign_in_url</span> <span class="o">=</span> <span class="n">block</span> <span class="k">if</span> <span class="n">block</span>
+      <span class="vi">@sign_in_url</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="c1"># ...</span>
+<span class="k">end</span>
+</code></pre></div>
+
+
+<p>We’re asking our blog app to provide a block Wellspring will call later to obtain <code>current_user</code>, plus another block for <code>sign_in_url</code>. We assume that <code>current_user_lookup</code> returns an object when user is logged-in and <code>nil</code> or <code>false</code> otherwise. If <code>current_user_lookup</code> returns nil, we should redirect to <code>sign_in_url</code>.</p>
+
+<p>Using blocks gives us the ability to execute them within the context of Wellspring’s ApplicationController, using <a href="http://apidock.com/ruby/Object/instance_eval">instance_eval</a>. The consequence is that <code>current_user_lookup</code> and <code>sign_in_url</code> will have access to all methods and properties of <code>Wellspring::ApplicationController</code>, including session, cookies and request – and that’s what we need to be able to attach to existing sessions.</p>
+
+<p>Here’s how it looks:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="c1"># wellspring: app/wellspring/application_controller.rb</span>
+<span class="k">module</span> <span class="nn">Wellspring</span>
+  <span class="k">class</span> <span class="nc">ApplicationController</span> <span class="o">&lt;</span> <span class="no">ActionController</span><span class="o">::</span><span class="no">Base</span>
+    <span class="n">before_action</span> <span class="ss">:authenticate_user</span>
+
+    <span class="kp">protected</span>
+
+    <span class="k">def</span> <span class="nf">current_user</span>
+      <span class="k">unless</span> <span class="n">defined?</span><span class="p">(</span><span class="vi">@current_user</span><span class="p">)</span>
+        <span class="vi">@current_user</span> <span class="o">=</span> <span class="nb">instance_eval</span><span class="p">(</span><span class="o">&amp;</span><span class="no">Wellspring</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">current_user_lookup</span><span class="p">)</span>
+      <span class="k">end</span>
+      <span class="vi">@current_user</span>
+    <span class="k">end</span>
+    <span class="n">helper_method</span> <span class="ss">:current_user</span>
+
+    <span class="k">def</span> <span class="nf">authenticate_user</span>
+      <span class="k">return</span> <span class="k">if</span> <span class="n">current_user</span>
+
+      <span class="n">redirect_to</span> <span class="nb">instance_eval</span><span class="p">(</span><span class="o">&amp;</span><span class="no">Wellspring</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">sign_in_url</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
+
+
+<p>This is the entire authentication mechanism for our CMS. Just two controller methods and two blocks of configuration.</p>
+
+<p>If you’d like to see how it works with devise, please check out the <a href="https://github.com/pch/wellspring-example-blog/blob/master/config/initializers/wellspring.rb">example blog app</a>. I won’t be covering the implementation on the blog-end, as it’s pretty much the same thing you’ll find in <a href="https://github.com/plataformatec/devise/blob/master/README.md">devise’s README</a>.</p>
+
+<hr>
+
+<h2><a name="markdown-live-preview"></a>Markdown &amp; Live Preview</h2>
+
+<p>We already have pretty much everything we need to create a simple 
+blog. But we’re missing an important feature: our posts don’t have any 
+formatting. We also want to have syntax highlighting for our code 
+snippets.</p>
+
+<p>For Markdown we’ll use <a href="https://github.com/vmg/redcarpet">Redcarpet</a>, with <a href="https://github.com/tmm1/pygments.rb">Pygments.rb</a> for syntax highlighting. Add both to <code>wellspring.gemspec</code>:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="c1"># wellspring: wellspring.gemspec</span>
+<span class="c1"># ...</span>
+<span class="no">Gem</span><span class="o">::</span><span class="no">Specification</span><span class="o">.</span><span class="n">new</span> <span class="k">do</span> <span class="o">|</span><span class="n">s</span><span class="o">|</span>
+  <span class="c1"># ...</span>
+
+  <span class="n">s</span><span class="o">.</span><span class="n">add_dependency</span> <span class="s2">"pygments.rb"</span>
+  <span class="n">s</span><span class="o">.</span><span class="n">add_dependency</span> <span class="s2">"redcarpet"</span>
+<span class="k">end</span>
+</code></pre></div>
+
+
+<p>Here’s the implementation of our <code>markdown</code> helper:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="c1"># wellspring: app/helpers/wellspring/markdown_helpers.rb</span>
+<span class="k">module</span> <span class="nn">Wellspring</span>
+  <span class="k">module</span> <span class="nn">MarkdownHelper</span>
+    <span class="k">class</span> <span class="nc">HTMLwithPygments</span> <span class="o">&lt;</span> <span class="o">::</span><span class="no">Redcarpet</span><span class="o">::</span><span class="no">Render</span><span class="o">::</span><span class="no">HTML</span>
+      <span class="kp">include</span> <span class="o">::</span><span class="no">Redcarpet</span><span class="o">::</span><span class="no">Render</span><span class="o">::</span><span class="no">SmartyPants</span>
+
+      <span class="k">def</span> <span class="nf">block_code</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">language</span><span class="p">)</span>
+        <span class="no">Pygments</span><span class="o">.</span><span class="n">highlight</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="ss">lexer</span><span class="p">:</span> <span class="n">language</span><span class="p">)</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">markdown</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+      <span class="n">renderer</span> <span class="o">=</span> <span class="no">HTMLwithPygments</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">hard_wrap</span><span class="p">:</span> <span class="kp">true</span><span class="p">,</span> <span class="n">filter_html</span><span class="p">:</span> <span class="kp">false</span><span class="p">)</span>
+      <span class="n">options</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">filter_html</span><span class="p">:</span> <span class="kp">false</span><span class="p">,</span>
+        <span class="ss">autolink</span><span class="p">:</span> <span class="kp">true</span><span class="p">,</span>
+        <span class="n">no_intra_emphasis</span><span class="p">:</span> <span class="kp">true</span><span class="p">,</span>
+        <span class="n">fenced_code_blocks</span><span class="p">:</span> <span class="kp">true</span><span class="p">,</span>
+        <span class="n">lax_html_blocks</span><span class="p">:</span> <span class="kp">true</span><span class="p">,</span>
+        <span class="ss">strikethrough</span><span class="p">:</span> <span class="kp">true</span><span class="p">,</span>
+        <span class="ss">superscript</span><span class="p">:</span> <span class="kp">true</span><span class="p">,</span>
+        <span class="ss">tables</span><span class="p">:</span> <span class="kp">true</span><span class="p">,</span>
+        <span class="ss">footnotes</span><span class="p">:</span> <span class="kp">true</span>
+      <span class="p">}</span>
+      <span class="o">::</span><span class="no">Redcarpet</span><span class="o">::</span><span class="no">Markdown</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">renderer</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">text</span><span class="o">.</span><span class="n">to_s</span><span class="p">)</span><span class="o">.</span><span class="n">html_safe</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
+
+
+<p>This helper won’t be available in our blog app. We have to include it manually:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="k">class</span> <span class="nc">PostsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+  <span class="n">helper</span> <span class="no">Wellspring</span><span class="o">::</span><span class="no">MarkdownHelper</span>
+
+  <span class="c1"># ...</span>
+<span class="k">end</span>
+</code></pre></div>
+
+
+<p>We can now format our blog posts:</p>
+
+<div class="highlight"><pre><code class="rhtml"># blog: app/views/posts/show.html.erb
+<span class="nt">&lt;h1&gt;</span><span class="cp">&lt;%=</span> <span class="vi">@post</span><span class="o">.</span><span class="n">title</span> <span class="cp">%&gt;</span><span class="nt">&lt;/h1&gt;</span>
+<span class="nt">&lt;p</span> <span class="na">class=</span><span class="s">"meta"</span><span class="nt">&gt;</span><span class="cp">&lt;%=</span> <span class="vi">@post</span><span class="o">.</span><span class="n">author_name</span> <span class="cp">%&gt;</span> <span class="cp">&lt;%=</span> <span class="vi">@post</span><span class="o">.</span><span class="n">published_at</span> <span class="cp">%&gt;</span><span class="nt">&lt;/p&gt;</span>
+
+<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"post-body"</span><span class="nt">&gt;</span>
+  <span class="cp">&lt;%=</span> <span class="n">markdown</span><span class="p">(</span><span class="vi">@post</span><span class="o">.</span><span class="n">body</span><span class="p">)</span> <span class="cp">%&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+</code></pre></div>
+
+
+<h3>Live Preview</h3>
+
+<p>Our blog posts are now nicely formatted, but we have no way of 
+telling if they look correctly – at least not before we hit ‘Save’ and 
+navigate to the post page. Wouldn’t it be nice to see live preview of 
+our blog posts as we type them?</p>
+
+<p>It’s not to difficult to implement, so let’s create a new controller 
+that will be responsible for generating previews. It should take the 
+text value passed in <code>params</code>, parse markdown and render it as html (skipping layout):</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="c1"># wellspring: app/controllers/wellspring/previews_controller.rb:</span>
+<span class="n">require_dependency</span> <span class="s2">"wellspring/application_controller"</span>
+
+<span class="k">module</span> <span class="nn">Wellspring</span>
+  <span class="k">class</span> <span class="nc">PreviewsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+    <span class="k">def</span> <span class="nf">show</span>
+      <span class="n">render</span> <span class="ss">layout</span><span class="p">:</span> <span class="kp">false</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
+
+
+<p>Now add the relevant route:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="c1"># wellspring: config/routes.rb:</span>
+<span class="n">post</span> <span class="s1">'preview'</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="s1">'previews#show'</span><span class="p">,</span> <span class="ss">as</span><span class="p">:</span> <span class="ss">:preview</span>
+</code></pre></div>
+
+
+<p>The view is super simple:</p>
+
+<div class="highlight"><pre><code class="rhtml"><span class="c">&lt;!-- wellspring: app/views/wellspring/previews/show.html.erb --&gt;</span>
+<span class="cp">&lt;%=</span> <span class="n">markdown</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:text</span><span class="o">]</span><span class="p">)</span> <span class="cp">%&gt;</span>
+</code></pre></div>
+
+
+<p>Now we need to adjust our Entry form. Let’s add a container we’ll use for live preview:</p>
+
+<div class="highlight"><pre><code class="rhtml"><span class="c">&lt;!-- wellspring: app/views/wellspring/entries/_form.html.erb --&gt;</span>
+<span class="cp">&lt;%=</span> <span class="n">simple_form_for</span><span class="p">(</span><span class="vi">@entry</span><span class="p">,</span> <span class="ss">as</span><span class="p">:</span> <span class="ss">:entry</span><span class="p">,</span> <span class="ss">url</span><span class="p">:</span> <span class="vi">@entry</span><span class="o">.</span><span class="n">persisted?</span> <span class="p">?</span> <span class="n">content_entry_path</span><span class="p">(</span><span class="vi">@entry</span><span class="p">)</span> <span class="p">:</span> <span class="n">entries_path</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span> <span class="cp">%&gt;</span>
+  ...
+<span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span>
+
+<span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">"live-preview"</span> <span class="na">data-preview-url=</span><span class="s">"</span><span class="cp">&lt;%=</span> <span class="n">preview_path</span> <span class="cp">%&gt;</span><span class="s">"</span><span class="nt">&gt;&lt;/div&gt;</span>
+</code></pre></div>
+
+
+<p>We’re finally ready to write some JavaScript.</p>
+
+<p>For the sake of simplicity, we assume that every textarea contains markdown text. We’ll bind to the <code>keyup</code>
+ event of textareas. When you start typing your blog post, with each key
+ release, we’ll take the text you already have, send it asynchronously 
+to <code>preview_path</code> and render formatted response within the live preview div.</p>
+
+<p>Here’s the JavaScript code for this:</p>
+
+<div class="highlight"><pre><code class="javascript"><span class="kd">var</span> <span class="nx">Wellspring</span> <span class="o">=</span> <span class="nx">Wellspring</span> <span class="o">||</span> <span class="p">{};</span>
+
+<span class="nx">Wellspring</span><span class="p">.</span><span class="nx">LivePreview</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="nx">selectors</span><span class="o">:</span> <span class="p">{</span>
+    <span class="nx">textarea</span><span class="o">:</span> <span class="s1">'form textarea'</span><span class="p">,</span>
+    <span class="nx">preview</span><span class="o">:</span>  <span class="s1">'#live-preview'</span>
+  <span class="p">},</span>
+
+  <span class="nx">initialize</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">$</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s1">'keyup'</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">selectors</span><span class="p">.</span><span class="nx">textarea</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">generatePreview</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">));</span>
+  <span class="p">},</span>
+
+  <span class="nx">generatePreview</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">preview</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">selectors</span><span class="p">.</span><span class="nx">preview</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">previewUrl</span> <span class="o">=</span> <span class="nx">preview</span><span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s1">'data-preview-url'</span><span class="p">);</span>
+
+    <span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span><span class="p">({</span>
+      <span class="nx">type</span><span class="o">:</span> <span class="s1">'POST'</span><span class="p">,</span>
+      <span class="nx">url</span><span class="o">:</span> <span class="nx">previewUrl</span><span class="p">,</span>
+      <span class="nx">data</span><span class="o">:</span> <span class="p">{</span>
+        <span class="nx">text</span><span class="o">:</span> <span class="nx">event</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span>
+      <span class="p">},</span>
+
+      <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">preview</span><span class="p">.</span><span class="nx">html</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">});</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="nx">Wellspring</span><span class="p">.</span><span class="nx">LivePreview</span><span class="p">.</span><span class="nx">initialize</span><span class="p">();</span>
+</code></pre></div>
+
+
+<p>This will work ok, but we don’t want to be flooding our app with 
+requests every time a key is pressed. We need some kind of throttle, 
+that will limit sending requests to once every, say, 200ms. We’ll use a <code>debounce</code> function for that:</p>
+
+<div class="highlight"><pre><code class="javascript"><span class="nx">Wellspring</span><span class="p">.</span><span class="nx">Utils</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="c1">// Source: https://remysharp.com/2010/07/21/throttling-function-calls</span>
+  <span class="nx">debounce</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">fn</span><span class="p">,</span> <span class="nx">delay</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">timer</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+    <span class="k">return</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">context</span> <span class="o">=</span> <span class="k">this</span><span class="p">,</span> <span class="nx">args</span> <span class="o">=</span> <span class="nx">arguments</span><span class="p">;</span>
+      <span class="nx">clearTimeout</span><span class="p">(</span><span class="nx">timer</span><span class="p">);</span>
+      <span class="nx">timer</span> <span class="o">=</span> <span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="nx">fn</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">context</span><span class="p">,</span> <span class="nx">args</span><span class="p">);</span>
+      <span class="p">},</span> <span class="nx">delay</span><span class="p">);</span>
+    <span class="p">};</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="nx">Wellspring</span><span class="p">.</span><span class="nx">LivePreview</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="c1">// ...</span>
+
+  <span class="nx">initialize</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">$</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s1">'keyup'</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">selectors</span><span class="p">.</span><span class="nx">textarea</span><span class="p">,</span> <span class="nx">Wellspring</span><span class="p">.</span><span class="nx">Utils</span><span class="p">.</span><span class="nx">debounce</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">generatePreview</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">),</span> <span class="mi">200</span><span class="p">));</span>
+  <span class="p">},</span>
+
+  <span class="c1">// ...</span>
+<span class="p">};</span>
+</code></pre></div>
+
+
+<p>This will not be as smooth as our previous version – you’ll notice a 
+small delay in the preview, but that’s ok. At least we’ve limited the 
+number of requests to our app.</p>
+
+<p>Here’s the result:</p>
+
+<p></p><figure class="center">
+  <img src="Tutorial:%20How%20to%20Build%20a%20CMS%20in%20Ruby%20on%20Rails_files/wellspring-live-preview.gif">
+</figure><p></p>
+
+<hr>
+
+<h2>That’s It</h2>
+
+<p>The number of features we could implement is endless and although 
+we’re missing quite a few essentials, like file upload, versioning, 
+categories, tags etc. – we’ll stop here. If you’d like to take it 
+further on your own, you’ll find the complete source code of <a href="https://github.com/pch/wellspring">Wellspring</a> and the <a href="https://github.com/pch/wellspring-example-blog">example blog app</a> on GitHub.</p>
+
+<p>If you have any questions, feel free to shoot me an <a href="mailto:piotr@postmodern.pl">email</a>.</p>
+</div>
+  </section>
+</div>
+
+
+  <section class="newsletter">
+    <div class="wrapper">
+      <!-- Begin MailChimp Signup Form -->
+      <div id="mc_embed_signup">
+        <form action="//pchm.us11.list-manage.com/subscribe/post?u=11cfa87153ab4fcb6a7410116&amp;id=060de58dd8" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate="novalidate">
+          <div id="mc_embed_signup_scroll">
+            <h2>Receive new articles via email</h2>
+
+            <div class="mc-field-group">
+              <input aria-required="true" name="EMAIL" class="required email" id="mce-EMAIL" placeholder="Enter your email" type="email">
+              <input value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button" type="submit"></div>
+            </div>
+            <div id="mce-responses" class="clear">
+              <div class="response" id="mce-error-response" style="display:none"></div>
+              <div class="response" id="mce-success-response" style="display:none"></div>
+            </div>
+            <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+            <div style="position: absolute; left: -5000px;">
+              <input name="b_11cfa87153ab4fcb6a7410116_060de58dd8" tabindex="-1" type="text">
+            </div>
+        </form>
+      </div>
+      <script type="text/javascript" src="Tutorial:%20How%20to%20Build%20a%20CMS%20in%20Ruby%20on%20Rails_files/mc-validate.js"></script><script type="text/javascript">(function($) {window.fnames = new Array(); window.ftypes = new Array();fnames[0]='EMAIL';ftypes[0]='email';fnames[1]='FNAME';ftypes[1]='text';}(jQuery));var $mcj = jQuery.noConflict(true);</script>
+      <!--End mc_embed_signup-->
+    </div>
+  </section>
+
+  <footer id="footer">
+    <div class="wrapper clearfix">
+      <div class="about">
+        <p>
+          Hi, I'm Piotr. I work as a Ruby on Rails developer. Every now and then I feel
+          the need to write about stuff that interests me. Not necessarily tech-related.
+        </p>
+
+        <p>
+          I'm <a href="mailto:piotr@postmodern.pl">available for hire</a>.
+        </p>
+      </div>
+      <div class="nav">
+        <ul class="clearfix">
+          <li><a href="http://pchm.co/">Posts</a></li>
+          <li><a href="http://www.postmodern.pl/">Services</a></li>
+          <li><a href="mail:piotr@postmodern.pl">Contact</a></li>
+        </ul>
+
+        <ul class="clearfix">
+          <li><a href="https://twitter.com/p_ch">Twitter</a></li>
+          <li><a href="https://github.com/pch">GitHub</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+ 
+
+
+</body></html>
