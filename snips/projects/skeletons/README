@@ -1,0 +1,11 @@
+ cp -r skeleton ex47
+ cd ex47
+ ls
+ NAME.gemspec   bin             doc             lib
+ Rakefile       data            ext             test s
+ mv NAME.gemspec ex47.gemspec
+ mv bin/NAME bin/ex47
+ mv tests/test_NAME.rb tests/test_ex47.rb
+ mv lib/NAME lib/ex47
+ mv lib/NAME.rb lib/ex47.rb
+ find . -name "*NAME*" -print

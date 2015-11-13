@@ -1,17 +1,26 @@
-filename = ARGV.first  			# gets filename as cl arg
+input_file = ARGV.first
 
-txt = open(filename+".txt")  	# append ext, open file and store file as txt
-puts "You entered "+filename    # print filename
-puts txt.read   				# print file content
-
-txt.close()
+def print_all(f)
+      puts f.read
+end
 
 
-puts "Enter name of second file"    # ask for another filenamw
-file2 = $stdin.gets.chomp			# get filename
+def rewind (f)
+    f.seek(0)
+end
 
-txt_again = open(file2+".txt")		# append ext, open file and store file as txt
-puts "You entered "+file2			# print filename
-puts txt_again.read					# print file content
+def print_a_line(line_count, f)
+      puts "#{line_count}, #{f.gets.chomp}"
+end
 
-txt_again.close()
+end
+
+puts 'calling the function now'
+
+current_file = open(input_file)
+
+print_a_line(current_file)
+
+#rewind current_file 
+
+puts 'printed'
